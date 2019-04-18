@@ -17,14 +17,6 @@ const User = function() {
   );
 };
 
-const User2 = function() {
-  return (
-    <div>
-      <Link to="/user">user</Link>
-    </div>
-  );
-};
-
 const Home = function() {
   return (
     <div>
@@ -53,6 +45,27 @@ const Home = function() {
  * the parent componet  of @Link should be inside @Router if it is in use.
  */
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { count: 0, intervalId: null };
+  }
+
+  componentDidMount() {
+    console.log("did mount");
+    const intervalId = setInterval(() => {
+      this.setState({ count: this.count + 1 });
+      console.log("the count is --- ", this.count);
+    }, 1000);
+
+    this.setState({ intervalId });
+    console.log(this.intervalId);
+  }
+
+  componentWillUnmount() {
+    console.log("will unmount");
+    clearInterval(this.intervalId);
+  }
+
   render() {
     return (
       <div className="App">
