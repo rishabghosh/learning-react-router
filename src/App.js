@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import "./App.css";
 
@@ -17,13 +17,19 @@ const User = function() {
   );
 };
 
-const Home = function() {
-  return (
-    <div>
-      <Link to="/">Home</Link>
-    </div>
-  );
-};
+class Home extends React.Component {
+  componentDidMount() {
+    clearInterval(this.props.intervalId);
+  }
+
+  render() {
+    return (
+      <div>
+        <Link to="/">Home</Link>
+      </div>
+    );
+  }
+}
 
 /**
  * @component  @Route
@@ -44,26 +50,52 @@ const Home = function() {
  * @component @Route and @Link cannnot stay outside @Router
  * the parent componet  of @Link should be inside @Router if it is in use.
  */
+
+// const App = function() {
+//   const [count, setCount] = useState(0);
+//   const [intervalId, setIntervalId] = useState(null);
+
+//   const increase = () => setCount(count + 1);
+
+//   useEffect(() => {
+//     const newId = setTimeout(increase, 1000);
+//     setIntervalId(newId);
+
+//     return () => clearTimeout(intervalId);
+//   }, [count]);
+
+//   return (
+//     <div className="App">
+//       <Router>
+//         <Route path="/" exact component={User} />
+//         <Route path="/user" exact component={Home} />
+//         <Route path="/user" exact render={Home} />
+//       </Router>
+//       <div>{count}</div>
+//     </div>
+//   );
+// };
+
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { count: 0, intervalId: null };
+    this.state = { count: 0, intervalId: null, location: window.location.href };
   }
 
   componentDidMount() {
     console.log("did mount");
     const intervalId = setInterval(() => {
-      this.setState({ count: this.count + 1 });
-      console.log("the count is --- ", this.count);
+      this.setState({ count: this.state.count + 1 });
+      console.log("the count is --- ", this.state.count);
     }, 1000);
 
     this.setState({ intervalId });
-    console.log(this.intervalId);
+    console.log(this.state.intervalId);
   }
 
   componentWillUnmount() {
     console.log("will unmount");
-    clearInterval(this.intervalId);
+    // clearInterval(this.state.intervalId);
   }
 
   render() {
@@ -71,9 +103,13 @@ class App extends Component {
       <div className="App">
         <Router>
           <Route path="/" exact component={User} />
-          <Route path="/user" exact component={Home} />
-          <Route path="/user" exact render={Home} />
+          <Route
+            path="/user"
+            exact
+            render={() => <Home intervalId={this.state.intervalId} />}
+          />
         </Router>
+        <div>{this.state.count}</div>
       </div>
     );
   }
